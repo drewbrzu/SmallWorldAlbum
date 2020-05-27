@@ -1,10 +1,13 @@
+""" REFERENCES
+- Working with WT-Forms: https://flask.palletsprojects.com/en/1.1.x/patterns/wtforms/
+"""
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from app_package.models import User
-
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username", 

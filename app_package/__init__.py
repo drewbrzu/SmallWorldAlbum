@@ -20,8 +20,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login' # If someone tries to access a route that requires to be logged in, they will instead be redirected to the 'login' route.
+login_manager.login_view = 'users.login' # If someone tries to access a route that requires to be logged in, they will instead be redirected to the 'login' route.
 login_manager.login_message_category = 'info'
 
 # Some imports need to be down here so that we don't have circular references
-from app_package import routes
+from app_package.users.routes import users
+from app_package.main.routes import main
+
+app.register_blueprint(users)
+app.register_blueprint(main)
+
