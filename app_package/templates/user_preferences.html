@@ -5,5 +5,82 @@
 {% endblock %}
 
 {% block main %}
-Here's your preferences...
+    Here's your preferences...
+
+    <div>
+        <form method="POST" action="" enctype="multipart/form-data"> <!-- This special encoding type is required for transmiting picture data. -->
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Update Account Info</legend>
+                <div class="form-group">
+                    {{ form.username.label(class="form-control-label") }}
+                    <!-- Check if we were redirected back to this page because of an error in the form. If so show each of the errors. If no errors exist show the username input textbox -->
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                    {% endif %}                   
+                </div>
+                <div class="form-group">
+                    {{ form.first_name.label(class="form-control-label") }}
+                    <!-- Check if we were redirected back to this page because of an error in the form. If so show each of the errors. If no errors exist show the first_name input textbox -->
+                    {% if form.first_name.errors %}
+                        {{ form.first_name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.first_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.first_name(class="form-control form-control-lg") }}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.last_name.label(class="form-control-label") }}
+                    <!-- Check if we were redirected back to this page because of an error in the form. If so show each of the errors. If no errors exist show the last_name input textbox -->
+                    {% if form.last_name.errors %}
+                        {{ form.last_name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.last_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.last_name(class="form-control form-control-lg") }}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    <!-- Check if we were redirected back to this page because of an error in the form. If so show each of the errors. If no errors exist show the email input textbox -->
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
 {% endblock %}
