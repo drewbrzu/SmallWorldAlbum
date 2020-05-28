@@ -1,3 +1,4 @@
+from flask import current_app
 from app_package import db, login_manager  # import the db and login_manager variables from our app package file
 from flask_login import UserMixin
 
