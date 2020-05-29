@@ -6,4 +6,51 @@ Hello
 
 {% block main %}
 Hello......
+<p id="exampleParagraph">Example Paragraph</p>
+<object id="svg-map-object" type="image/svg+xml" data="{{url_for('static', filename='images/Map_US_States.svg') }}">
+    <!-- Within the object tags you can add fallback text or images in case the web browser doesn't support the 'object' type. -->
+    Your browser does not support SVG.
+</object>
+{% endblock %}
+
+{% block afterbody %}
+    <script type="text/javascript">
+        // https://flask.palletsprojects.com/en/1.1.x/patterns/jquery/#where-is-my-site
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+        window.addEventListener("load", function() {
+            ajaxGetRequest({{ url_for('main.updateMap')|tojson }}, updateMapColors);
+
+            var svgObject = document.getElementById('svg-map-object').contentDocument;
+            svgObject.addEventListener('click', function (event){
+                if(event.target.hasAttribute('id')){
+                    var stateId = event.target.getAttribute('id');
+                    console.log(stateId);
+                    svgObject.getElementById(stateId).style.fill='blue';
+                }
+            })
+
+        });
+
+        ///
+        /// Handles standard AJAX GET requests. Parameters are URL for request and function to handle result.
+        ///
+        function ajaxGetRequest(url, cFunction){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    cFunction(this);
+                }
+            };
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+
+        ///
+        /// Handles updating the map using the response from the AJAX request
+        ///
+        function updateMapColors(xhttp){
+            document.getElementById('exampleParagraph').innerHTML = JSON.parse(xhttp.responseText).result;
+        }
+    </script>
 {% endblock %}

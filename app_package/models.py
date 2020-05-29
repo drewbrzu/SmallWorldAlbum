@@ -17,4 +17,12 @@ class User(db.Model, UserMixin): # This class inherits from both 'db.model' and 
     def __repr__(self): # This method already has default behavior defined for all classes. This method returns a value to represent this class
         return f"User('{self.firstname}', '{self.lastname}')"
 
+class State(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    abreviation = db.Column(db.String(100), unique=True, nullable=False)
 
+class StatesVisited(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    state_id = db.Column(db.Integer, nullable=False)

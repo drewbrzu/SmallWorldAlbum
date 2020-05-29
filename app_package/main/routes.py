@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 
 main = Blueprint('main', __name__)
 
@@ -6,6 +6,11 @@ main = Blueprint('main', __name__)
 @main.route("/home")
 def home():
     return render_template("index.html")
+ 
+@main.route("/updateMap")
+def updateMap():
+    return jsonify(result=1337)
+
 
 """
 @main.route(
