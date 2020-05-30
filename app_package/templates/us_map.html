@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+US Travel Map
+{% endblock %}
+
+{% block main %}
+<p>
+    This map can be used to track which states you've visited. Just click on a state to change it's color and indicate that you've been there. 
+    If you make a mistake, just click on the state again to unmark it as a state you've visited. This information is stored on the website's database and is 
+    linked to your user account. This way all of your progress is saved and next time you come back to this site you can pick up where you left off.
+
+</p>
+<!-- USING SVG FOR WEB APPS REFERENCES: --
+    https://svgontheweb.com/
+    https://www.sitepoint.com/add-svg-to-web-page/
+    http://www.petercollingridge.co.uk/tutorials/svg/interactive/javascript/
+-->
+<object id="svg-map-object" type="image/svg+xml" data="{{url_for('static', filename='images/Map_US_States.svg') }}">
+    <!-- Within the object tags you can add fallback text or images in case the web browser doesn't support the 'object' type. -->
+    Your browser does not support SVG.
+</object>
+{% endblock %}
+
+{% block afterbody %}
+    <script type="text/javascript">
+        // https://flask.palletsprojects.com/en/1.1.x/patterns/jquery/#where-is-my-site
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+        ///
+        /// When page is loaded, setup and create the SVG map.
+        ///
+        window.addEventListener("load", function() {
+            // Load map for current user
+            loadUsersMap();
+
+            var svgObject = document.getElementById('svg-map-object').contentDocument;
+            // Add event listener to send data to web server when a state in the SVG is clicked on.
+            svgObject.addEventListener('click', function (event){
+                if(event.target.hasAttribute('id')){
+                    var stateId = event.target.getAttribute('id');
+                    console.log(stateId);
+                    // Send stateId from click event to server to update database of states visited.
+                    postMapUpdates(stateId);
+                }
+            })
+
+        });
+
+        ///
+        /// Load and update the map for the current user's settings
+        ///
+        function loadUsersMap(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    recolorMap(this);
+                }
+            };
+            xhttp.open("GET", {{ url_for('main.updateMap')|tojson }}, true);
+            xhttp.send();
+        }
+
+        ///
+        /// Recolor the SVG map per the states listed in the xhttp response
+        ///
+        function recolorMap(xhttp){
+            var stateList = JSON.parse(xhttp.responseText)
+            var svgObject = document.getElementById('svg-map-object').contentDocument;
+            // Reset all of the states to their default grey color.
+            for (item of svgObject.getElementsByTagName('path')){
+                item.style.fill='#D3D3D3';
+            }
+            // Loop through states which this user has visited and color them blue.
+            for (stateId of stateList){
+                svgObject.getElementById(stateId).style.fill='blue';
+            }
+            
+        }
+
+        ///
+        /// Sends a POST request to the server to add the state that was clicked on.
+        ///
+        function postMapUpdates(stateId){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log('we good');
+                    loadUsersMap();
+                }
+            };
+            xhttp.open("POST", {{ url_for('main.updateMap')|tojson }}, true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+            xhttp.send("stateId="+stateId);
+        }
+
+    </script>
+{% endblock %}
