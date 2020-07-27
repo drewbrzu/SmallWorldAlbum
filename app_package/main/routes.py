@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, url_for, redirect
+from flask import Blueprint, render_template, request, jsonify, url_for, redirect, make_response
 from flask_login import current_user, login_required
 from app_package import db
 from app_package.models import State, User
@@ -37,6 +37,29 @@ def updateMap():
 
         return jsonify(statesVisitedList)
 
+@main.route("/queryStateInfo", methods=["GET"])
+@login_required
+def queryStateInfo():
+    stateAbr = request.args['stateId']
+
+    stateDbObject = State.query.filter_by(abreviation=stateAbr).first_or_404()
+
+    # Check if this user has already visited the state clicked.
+    if db.session.query(User).join(User.statesVisited).filter(State.id == stateDbObject.id, User.id == current_user.id).count() == 0:
+        stateVisited = False
+    else:
+        stateVisited = True
+
+    stateInfo = {
+        "StateAbreviation": stateDbObject.abreviation,
+        "StateName" : stateDbObject.name,
+        "StateVisited" : stateVisited
+    }
+
+    # Package the response as json
+    res = make_response(jsonify(stateInfo), 200)
+
+    return res
 
 """
 @main.route(

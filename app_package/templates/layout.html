@@ -21,6 +21,8 @@
 
 </head>
 
+<style>{% block style %}{% endblock %}</style>
+
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark border">
         <a class="navbar-brand" href="{{ url_for('main.home') }}"><img src="/static/images/globe.png" style="height:35px"></a>
@@ -63,7 +65,7 @@
     </main>
 
     <footer class="small text-center text-muted">
-        <p>This is the footer...</p>
+        <!--<p>This is the footer...</p> -->
     </footer>
 
 </body>
