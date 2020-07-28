@@ -3,6 +3,9 @@ from flask_login import current_user, login_required
 from app_package import db
 from app_package.models import State, User
 
+import uuid
+import os
+
 main = Blueprint('main', __name__)
 
 @main.route("/")
@@ -60,6 +63,23 @@ def queryStateInfo():
     res = make_response(jsonify(stateInfo), 200)
 
     return res
+
+
+@main.route("/uploadPhotos", methods=["POST"])
+@login_required
+def uploadPhotos():
+    if request.method == "POST":
+        if request.files:
+            image = request.files['image']
+            print(image)
+            print("done")
+            f_n, file_ext = os.path.splitext(image.filename)
+            photoUUID = str(uuid.uuid4()) + file_ext
+            image.save(photoUUID) ######  https://riptutorial.com/flask/example/19418/save-uploads-on-the-server
+            ####  https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
+
+    return "200"
+
 
 """
 @main.route(

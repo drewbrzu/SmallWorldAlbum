@@ -9,64 +9,64 @@ US Travel Map
 
     /* The Modal (background) */
     .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
     }
 
     /* Modal Content */
     .modal-content {
-    position: relative;
-    background-color: #fefefe;
-    margin: auto;
-    padding: 0;
-    border: 1px solid #888;
-    width: 80%;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    -webkit-animation-name: animatetop;
-    -webkit-animation-duration: 0.4s;
-    animation-name: animatetop;
-    animation-duration: 0.4s
+        position: relative;
+        background-color: #fefefe;
+        margin: auto;
+        padding: 0;
+        border: 1px solid #888;
+        width: 80%;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.4s;
+        animation-name: animatetop;
+        animation-duration: 0.4s
     }
 
     /* Add Animation */
     @-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0} 
-    to {top:0; opacity:1}
+        from {top:-300px; opacity:0} 
+        to {top:0; opacity:1}
     }
 
     @keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
+        from {top:-300px; opacity:0}
+        to {top:0; opacity:1}
     }
 
     /* The Close Button */
     .close {
-    color: white;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
     }
 
     .close:hover,
     .close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .modal-header {
-    padding: 2px 16px;
-    background-color: #5cb85c;
-    color: white;
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
     }
 
     .modal-body {
@@ -77,10 +77,88 @@ US Travel Map
     }
 
     .modal-footer {
-    padding: 2px 16px;
-    background-color: #5cb85c;
-    color: white;
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
     } 
+
+/***** PHOTO GRID *****/
+    .photo-grid-row {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 4px;
+    }
+
+    /* Create four equal columns that sits next to each other */
+    .photo-grid-col {
+        flex: 25%;
+        max-width: 25%;
+        padding: 0 4px;
+    }
+
+    .photo-grid-col img {
+        margin-top: 8px;
+        vertical-align: middle;
+        width: 100%;
+    }
+
+    /* Responsive layout - makes a two column-layout instead of four columns */
+    @media screen and (max-width: 800px) {
+        .photo-grid-col {
+            flex: 50%;
+            max-width: 50%;
+        }
+    }
+
+    /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+    @media screen and (max-width: 600px) {
+        .photo-grid-col {
+            -ms-flex: 100%;
+            flex: 100%;
+            max-width: 100%;
+        }
+    }
+
+/*****   DRAG AND DROP STUFF *****/
+    #drop-region {
+        background-color: #fff;
+        border-radius:20px;
+        box-shadow:0 0 35px rgba(0,0,0,0.05);
+        width:400px;
+        padding:60px 40px;
+        text-align: center;
+        cursor:pointer;
+        transition:.3s;
+    }
+    #drop-region:hover {
+        box-shadow:0 0 45px rgba(0,0,0,0.1);
+    }
+     
+    #image-preview {
+        margin-top:20px;
+    }
+    #image-preview .image-view {
+        display: inline-block;
+        position:relative;
+        margin-right: 13px;
+        margin-bottom: 13px;
+    }
+    #image-preview .image-view img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+    #image-preview .overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        background: rgba(255,255,255,0.5);
+    }
+
+
+
 {% endblock %}
 
 {% block main %}
@@ -108,25 +186,53 @@ US Travel Map
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
-            <div class="modal-state-info" style="flex: 1 1 200px">
-                <div class="modal-state-outline" style="border-style: solid; border-width: 2px; border-color: red;">
-                    <svg id="stateSvg" height="200" width="200" viewBox="0 0 200 200">
+            <div class="modal-state-info" style="flex: 1 1 200px;">
+                <div class="modal-state-outline" style="border-style: solid; border-width: 2px; border-color: red; border-collapse:collapse;">
+                    <svg id="stateSvg" height="25vh" width="25vh" viewBox="0 0 200 200">
                         <path  d="" />
                         Sorry, your browser does not support inline SVG.
                       </svg>
                 </div>
-                <div class="modal-state-text" style="border-style: solid; border-width: 2px; border-color: red;">
+                <div class="modal-state-text" style="max-height: 50vh; overflow-y: auto; border-style: solid; border-width: 2px; border-color: red; border-collapse:collapse;">
                     <p>
-                        Here will be some fun information about the state shown above. The following text is sample text and serves no purpose at all. 
-                        This manual is not an employment contract and does not guarnatee the sontinuation of any benefits or employment for any specific duration. 
-                        Although we hop that your emplyoment relationship with us will be fulfilling and long-lasting. Either the employee or busines may terminate 
-                        this relationship at any time.
-
+                        Here will be some fun information about the state shown above. 
+                       
                     </p>
                 </div>
             </div>
-            <div class="modal-state-photos" style="flex: 3 3 500px; border-style: solid; border-width: 2px; border-color: red;">
+            <div class="modal-state-photos" style="flex: 3 3 500px; max-height: 75vh; overflow-y: auto; border-style: solid; border-width: 2px; border-color: red; border-collapse:collapse;">
                 <p> modal state photos</p>
+                <div id="drop-region">
+                    <div class="drop-message">
+                        Drag & Drop images or click to upload
+                    </div>
+                    <div id="image-preview"></div>
+                </div>
+                <div class="photo-grid-row">
+                    <div class="photo-grid-col">
+                        <img src="{{url_for('static', filename='images/testImgs/01.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/02.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/03.jpg') }}" style="width:100%">
+                    </div>
+
+                    <div class="photo-grid-col">
+                        <img src="{{url_for('static', filename='images/testImgs/04.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/05.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/06.jpg') }}" style="width:100%">
+                    </div>
+
+                    <div class="photo-grid-col">
+                        <img src="{{url_for('static', filename='images/testImgs/07.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/08.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/09.jpg') }}" style="width:100%">
+                    </div>
+
+                    <div class="photo-grid-col">
+                        <img src="{{url_for('static', filename='images/testImgs/10.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/11.jpg') }}" style="width:100%">
+                        <img src="{{url_for('static', filename='images/testImgs/12.jpg') }}" style="width:100%">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -161,6 +267,137 @@ US Travel Map
             // TODO: Other events when user clicks inside the modal...
 
         });
+
+        ///
+        /// DRAG & DROP FUNCTIONALITY
+        ///
+        /// (  https://blog.soshace.com/the-ultimate-guide-to-drag-and-drop-image-uploading-with-pure-javascript/  )
+
+        var dropRegion = document.getElementById("drop-region");
+        var imagePreviewRegion = document.getElementById("image-preview");
+
+        var fakeInput = document.createElement("input");
+        fakeInput.type = "file";
+        fakeInput.accept = "image/*";       // Allows all image types. Could also be limited to 'image/png'
+        fakeInput.multiple = true;          // allows selecting multiple files
+        dropRegion.addEventListener('click', function(){
+            fakeInput.click();
+        });
+
+        fakeInput.addEventListener("change", function(){
+            var files = fakeInput.files;
+            handleFiles(file);
+        });
+
+        function preventDefault(e){
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        dropRegion.addEventListener('dragenter', preventDefault, false);
+        dropRegion.addEventListener('dragleave', preventDefault, false);
+        dropRegion.addEventListener('dragover', preventDefault, false);
+        dropRegion.addEventListener('drop', preventDefault, false);
+
+        function handleDrop(e){
+            var data = e.dataTransfer;
+            var files = data.files;
+
+            handleFiles(files);
+        }
+
+        dropRegion.addEventListener('drop', handleDrop, false);
+
+        function handleFiles(files){
+            for (var i = 0, len = files.length; i < len; i++){
+                if (validateImage(files[i])){
+                    previewAndUploadImage(files[i]);
+                }
+            }
+        }
+
+        function validateImage(image){
+            // TODO: FILES ALSO NEED TO BE VALIDATED ON THE SERVER SIDE TO ENSURE NO MALICOUS FILES ARE UPLOADED.
+            // Check to make sure it is valid image file format.
+            var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (validTypes.indexOf(image.type) == -1){
+                alert("Invalid File Type");
+                return false;
+            }
+
+            // Check to make sure image is below size limitations.
+            var maxSizeInBytes = 10e6; // 10MB
+            if (image.size > maxSizeInBytes){
+                alert("File Too Large");
+                return false;
+            }
+            return true;
+        }
+        
+
+        function previewAndUploadImage(image) {
+    
+            // container
+            var imgView = document.createElement("div");
+            imgView.className = "image-view";
+            imagePreviewRegion.appendChild(imgView);
+        
+            // previewing image
+            var img = document.createElement("img");
+            imgView.appendChild(img);
+        
+            // progress overlay
+            var overlay = document.createElement("div");
+            overlay.className = "overlay";
+            imgView.appendChild(overlay);
+        
+        
+            // read the image...
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(image);
+        
+            // create FormData
+            var formData = new FormData();
+            formData.append('image', image);
+        
+            // upload the image
+            var uploadLocation = 'UPLOAD_LOCATION';
+        
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", {{ url_for('main.uploadPhotos')|tojson }}, true);
+        
+            ajax.onreadystatechange = function(e) {
+                if (ajax.readyState === 4) {
+                    if (ajax.status === 200) {
+                        // done!
+                        console.log("Photo Uploaded!");
+                    } else {
+                        // error!
+                        console.log("Photo Error...");
+                    }
+                }
+            }
+        
+            ajax.upload.onprogress = function(e) {
+        
+                // change progress
+                // (reduce the width of overlay)
+        
+                var perc = (e.loaded / e.total * 100) || 100,
+                    width = 100 - perc;
+        
+                overlay.style.width = width;
+            }
+    
+            ajax.send(formData);
+        }
+
+
+
+
 
         ///
         /// Request information about the state that was clicked on.
@@ -203,6 +440,8 @@ US Travel Map
 
             // Populate the state text and information in the modal.
             let randomText = "Here will be some fun information about the state shown above. The following text is sample text and serves no purpose at all. This manual is not an employment contract and does not guarnatee the sontinuation of any benefits or employment for any specific duration. Although we hop that your emplyoment relationship with us will be fulfilling and long-lasting. Either the employee or busines may terminate this relationship at any time.";
+            randomText += randomText;
+            randomText += randomText;
             if (stateJsonObj['StateVisited']) {
                 stateModal.getElementsByClassName("modal-state-text")[0].innerHTML = "\n\n You have visited " + stateJsonObj['StateName'] + ".\n\n" + randomText;
             }
