@@ -4,3 +4,4 @@ venv
 *.pyc
 __pycache__
 app_package/static/images/testImgs/*
+app_package/static/images/uploaded/*

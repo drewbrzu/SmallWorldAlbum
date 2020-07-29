@@ -250,64 +250,73 @@ US Travel Map
 
         // Get the modal object and the object for closing the modal
         var stateModal = document.getElementById("stateModal");
-        var closeModal = document.getElementsByClassName("close")[0];
+        var stateModalCloseButton = document.getElementsByClassName("close")[0];
+        var activeState = "";
 
         // When the user clicks on the icon to close the modal then close it.
-        closeModal.addEventListener('click', function(event){
-            stateModal.style.display = "none";
+        stateModalCloseButton.addEventListener('click', function(event){
+            closeModal();
         });
         stateModal.addEventListener('click', function(event){
             // If the user clicked outside the modal, then close it.
             // Note: when the event target is "stateModel" it is considered outside the modal. Otherwise, the target will be something like "modal-content".
             console.log(event.target.id);
             if (event.target.id == "stateModal"){
-                stateModal.style.display = "none";
+                closeModal();
             }
 
             // TODO: Other events when user clicks inside the modal...
 
         });
 
+        function closeModal(){
+            stateModal.style.display = "none";
+            activeState = "";
+        }
+
         ///
         /// DRAG & DROP FUNCTIONALITY
         ///
         /// (  https://blog.soshace.com/the-ultimate-guide-to-drag-and-drop-image-uploading-with-pure-javascript/  )
 
-        var dropRegion = document.getElementById("drop-region");
-        var imagePreviewRegion = document.getElementById("image-preview");
+        var dropRegion = document.getElementById("drop-region");    // HTML element defining region where photos can be drag & dropped.
+        var imagePreviewRegion = document.getElementById("image-preview");  // HTML element within Drop Region which shows thumbnail previews of images being uploaded.
 
-        var fakeInput = document.createElement("input");
-        fakeInput.type = "file";
-        fakeInput.accept = "image/*";       // Allows all image types. Could also be limited to 'image/png'
-        fakeInput.multiple = true;          // allows selecting multiple files
+        // Use the Drop Region as a link to normal file upload dialog if it's clicked
+        var fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";       // Allows all image types. Could also be limited to 'image/png'
+        fileInput.multiple = true;          // allows selecting multiple files
         dropRegion.addEventListener('click', function(){
-            fakeInput.click();
+            fileInput.click();
         });
 
-        fakeInput.addEventListener("change", function(){
+        // Process files when uploaded via the standard file upload dialog.
+        fileInput.addEventListener("change", function(){
             var files = fakeInput.files;
             handleFiles(file);
         });
 
+        // Prevent default drag & drop events for the Drop Region.
         function preventDefault(e){
             e.preventDefault();
             e.stopPropagation();
         }
-
         dropRegion.addEventListener('dragenter', preventDefault, false);
         dropRegion.addEventListener('dragleave', preventDefault, false);
         dropRegion.addEventListener('dragover', preventDefault, false);
         dropRegion.addEventListener('drop', preventDefault, false);
 
+        // Process files when uploaded via the drop event for the Drop Region
         function handleDrop(e){
             var data = e.dataTransfer;
             var files = data.files;
 
             handleFiles(files);
         }
-
         dropRegion.addEventListener('drop', handleDrop, false);
 
+        // Function to handle files uploaded either by drag & drop or standard file upload.
         function handleFiles(files){
             for (var i = 0, len = files.length; i < len; i++){
                 if (validateImage(files[i])){
@@ -316,6 +325,7 @@ US Travel Map
             }
         }
 
+        // Make sure files uploaded meet required criteria.
         function validateImage(image){
             // TODO: FILES ALSO NEED TO BE VALIDATED ON THE SERVER SIDE TO ENSURE NO MALICOUS FILES ARE UPLOADED.
             // Check to make sure it is valid image file format.
@@ -337,38 +347,36 @@ US Travel Map
 
         function previewAndUploadImage(image) {
     
-            // container
+            // Container to show thumbnail of uploaded image.
             var imgView = document.createElement("div");
             imgView.className = "image-view";
             imagePreviewRegion.appendChild(imgView);
         
-            // previewing image
+            // Create thumbnail of image.
             var img = document.createElement("img");
             imgView.appendChild(img);
         
-            // progress overlay
+            // Transparent filter above image thumbnail (used as progress bar).
             var overlay = document.createElement("div");
             overlay.className = "overlay";
             imgView.appendChild(overlay);
         
         
-            // read the image...
+            // Read the image.
             var reader = new FileReader();
             reader.onload = function(e) {
                 img.src = e.target.result;
             }
             reader.readAsDataURL(image);
         
-            // create FormData
+            // Save the image to the form data to be uploaded to the server.
             var formData = new FormData();
             formData.append('image', image);
+            formData.append('stateName', activeState);
         
-            // upload the image
-            var uploadLocation = 'UPLOAD_LOCATION';
-        
+            // Upload form data containing image to the server.
             var ajax = new XMLHttpRequest();
             ajax.open("POST", {{ url_for('main.uploadPhotos')|tojson }}, true);
-        
             ajax.onreadystatechange = function(e) {
                 if (ajax.readyState === 4) {
                     if (ajax.status === 200) {
@@ -376,22 +384,20 @@ US Travel Map
                         console.log("Photo Uploaded!");
                     } else {
                         // error!
-                        console.log("Photo Error...");
+                        console.log("Error with Photo Upload...");
                     }
                 }
             }
         
+            // Adjust the overlayed filter width as image is uploaded to the server (simulating progress bar).
             ajax.upload.onprogress = function(e) {
-        
                 // change progress
                 // (reduce the width of overlay)
-        
                 var perc = (e.loaded / e.total * 100) || 100,
                     width = 100 - perc;
         
                 overlay.style.width = width;
             }
-    
             ajax.send(formData);
         }
 
@@ -420,8 +426,9 @@ US Travel Map
         function populateStateModal(xhttp){
             const stateJsonObj = xhttp.response;
             // Populate the state name anywhere it is posted in the modal
+            activeState = stateJsonObj['StateName'];
             for (element of stateModal.getElementsByClassName("stateName")){
-                element.innerHTML = stateJsonObj['StateName'];
+                element.innerHTML = activeState;
             }
 
             // Extract path data from US map SVG for the specific state of interest.
@@ -443,10 +450,10 @@ US Travel Map
             randomText += randomText;
             randomText += randomText;
             if (stateJsonObj['StateVisited']) {
-                stateModal.getElementsByClassName("modal-state-text")[0].innerHTML = "\n\n You have visited " + stateJsonObj['StateName'] + ".\n\n" + randomText;
+                stateModal.getElementsByClassName("modal-state-text")[0].innerHTML = "\n\n You have visited " + activeState + ".\n\n" + randomText;
             }
             else {
-                stateModal.getElementsByClassName("modal-state-text")[0].innerHTML = "You have not visited " + stateJsonObj['StateName'] + ".\n\n" + randomText;
+                stateModal.getElementsByClassName("modal-state-text")[0].innerHTML = "You have not visited " + activeState + ".\n\n" + randomText;
             }
             
         }
@@ -473,7 +480,7 @@ US Travel Map
 
                     // OLD CODE: THIS FUNCTIONALITY WILL BE REPLACED INSIDE MODAL
                     // Send stateId from click event to server to update database of states visited.
-                    //postMapUpdates(stateId);
+                    postMapUpdates(stateId);
                 }
             })
 

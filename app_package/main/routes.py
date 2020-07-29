@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, request, jsonify, url_for, redirect, make_response
+from flask import Blueprint, render_template, request, jsonify, url_for, redirect, make_response, current_app
 from flask_login import current_user, login_required
 from app_package import db
-from app_package.models import State, User
+from app_package.models import State, User, Picture
 
-import uuid
+import secrets
 import os
 
 main = Blueprint('main', __name__)
@@ -46,6 +46,11 @@ def queryStateInfo():
     stateAbr = request.args['stateId']
 
     stateDbObject = State.query.filter_by(abreviation=stateAbr).first_or_404()
+    
+    userPicsAtState = Picture.query.filter_by(user_id=current_user.id, state_id=stateDbObject.id)
+
+    for pic in userPicsAtState:
+        print(pic.fileName)
 
     # Check if this user has already visited the state clicked.
     if db.session.query(User).join(User.statesVisited).filter(State.id == stateDbObject.id, User.id == current_user.id).count() == 0:
@@ -69,14 +74,20 @@ def queryStateInfo():
 @login_required
 def uploadPhotos():
     if request.method == "POST":
+        stateName = request.form['stateName']
         if request.files:
             image = request.files['image']
-            print(image)
-            print("done")
-            f_n, file_ext = os.path.splitext(image.filename)
-            photoUUID = str(uuid.uuid4()) + file_ext
-            image.save(photoUUID) ######  https://riptutorial.com/flask/example/19418/save-uploads-on-the-server
-            ####  https://stackoverflow.com/questions/42424853/saving-upload-in-flask-only-saves-to-project-root
+            f_name, f_ext = os.path.splitext(image.filename)
+            photoName = secrets.token_hex(8) + f_ext
+            photoPath = os.path.join(current_app.root_path, 'static/images/uploaded/' + photoName)
+            image.save(photoPath) 
+
+            stateDbObject = State.query.filter_by(name=stateName).first_or_404()
+
+            pic = Picture(fileName=photoName, filePath=photoPath, user_id=current_user.id, state_id=stateDbObject.id)
+            db.session.add(pic)
+            db.session.commit()
+            #current_user.pictures.append(stateClicked)
 
     return "200"
 
